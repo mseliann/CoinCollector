@@ -1,0 +1,150 @@
+body {
+    background-color: black;
+    display: block;
+    width: 100vh;
+    height: 100vh;
+    overflow: hidden;
+}
+#pickup {
+    background-color:#f15656;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100vw - 208px);
+    height: 100vh;
+}
+#coins {
+    background-color:#f7ea77;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: calc(100vh / 7);
+    border-bottom: 5px solid black;
+}
+#coinsHead {
+    font-size: calc(100vh / 28);
+    text-align: center;
+    padding: calc(100vh / 112) 0;
+    border-bottom: 1px solid black;
+}
+#coinsValue {
+    text-align: right;
+    margin: calc(100vh / 56) 2px 0 0;
+    font-size: calc(100vh / 28);
+}
+#gems {
+    background-color: #8be2f1;
+    position: absolute;
+    top: calc(100vh / 7);
+    right: 0px;
+    width: 200px;
+    height: calc(100vh / 7);
+    border-bottom: 5px solid black;
+}
+#gemsHead {
+    font-size: calc(100vh / 28);
+    text-align: center;
+    padding: calc(100vh / 112) 0;
+    border-bottom: 1px solid black;
+}
+#gemsValue {
+    text-align: right;
+    margin: calc(100vh / 56) 2px 0 0;
+    font-size: calc(100vh / 28);
+}
+#upgradeCoinSpawn {
+    background-color: brown;
+    position: absolute;
+    top: calc(100vh / 7 * 2);
+    right: 0;
+    width: 200px;
+    height: calc(100vh / 7);
+    border-bottom: 5px solid black;
+}
+#upgradeCoinMultiplier {
+    background-color: chartreuse;
+    position: absolute;
+    top: calc(100vh / 7 * 3);
+    right: 0;
+    width: 200px;
+    height: calc(100vh / 7);
+    border-bottom: 5px solid black;
+}
+#watchVideoGems {
+    background-color: gray;
+    position: absolute;
+    top: calc(100vh / 7 * 4);
+    right: 0;
+    width: 200px;
+    height: calc(100vh / 7);
+    border-bottom: 5px solid black;
+}
+#watchVideoCoins {
+    background-color: whitesmoke;
+    position: absolute;
+    top: calc(100vh / 7 * 5);
+    right: 0;
+    width: 200px;
+    height: calc(100vh / 7);
+    border-bottom: 5px solid black;
+}
+#help {
+    background-color:turquoise;
+    position: absolute;
+    top: calc(100vh / 7 * 6);
+    right: 0;
+    width: 200px;
+    height: calc(100vh / 7);
+}
+.coin {
+    background-color:#f0e161;
+    display: inline-block;
+    font-size: 26px;
+    width: 50px;
+    height: 50px;
+    padding: 3px;
+    border-radius: 40px;
+    border: 2px solid black;
+}
+.coinInside {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    padding: 4px 11px;
+    border-radius: 40px;
+    border: 2px solid black;
+}
+
+
+
+
+
+
+
+
+
+.coin0 {
+    background-color: chartreuse;
+    position: absolute;
+    top: calc(100vh / 10 * 0);
+    left: calc((100vw - 200px) / 5 * 0);
+    width: calc((100vw - 200px) / 5);
+    height: calc(100vh / 10);
+}
+.coin1 {
+    background-color: chartreuse;
+    position: absolute;
+    top: calc(100vh / 10 * 0);
+    left: calc((100vw - 200px) / 5 * 1);
+    width: calc((100vw - 200px) / 5);
+    height: calc(100vh / 10);
+}
+.coin4 {
+    background-color:beige;
+    position: absolute;
+    top: calc(100vh / 10 * 0);
+    left: calc((100vw - 200px) / 5 * 4);
+    width: calc((100vw - 200px) / 5);
+    height: calc(100vh / 10);
+}
