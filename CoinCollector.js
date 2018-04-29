@@ -13,6 +13,10 @@ var CoinCollector = function () {
 };
 CoinCollector.prototype = CoinCollector;
 
+CoinCollector.log = new function(s) {
+    console.log(s)
+}
+
 CoinCollector.Game = function(data, ui) {
     var ctx = this;
     var runCoinsTimeoutID = null; 
@@ -21,15 +25,39 @@ CoinCollector.Game = function(data, ui) {
     var coinRate = 1000;
     var coinLife = 10000;
     var coinClickMultiplier = 3;
+
     ctx.run = function() {
         data.coins = 1000;
         data.gems = 1000;
         runCoins();
         runGems();
+        console.log(ui.getCoinAreaSize());
+                
+        var fn = function () {
+            ui.createCoin(Math.random() * ui.getCoinAreaSize().width + 1, Math.random() * ui.getCoinAreaSize().height + 1);
+            setTimeout(fn, 0);
+        };
+        fn();
     };
     var createCoin = function() {};
-    var setCoins = function() {};
-    var setGems = function() {};
+    var addCoins = function(n) {
+        if (data.coins < 0) {
+            CoinCollector.log("Error: coins cannot be less than zero.")
+            return false;
+        }
+        data.coins += n;
+        runCoins();
+        return true;
+    };
+    var addGems = function(n) {
+        if (data.gems + n < 0) {
+            CoinCollector.log("Error: Gems cannot be less than zero.");
+            return false;
+        }
+        data.gems += n;
+        runGems();
+        return true;
+    };
     var runCoins = function() {
         if (runCoinsTimeoutID === null) {
             var doIt = function() {
@@ -94,6 +122,9 @@ CoinCollector.Data = function() {
 
 CoinCollector.UI = function() {
     var ctx = this;
+    var coinSize = 50;
+    var coinAreaSize = null;
+    var coinAreagetBoundingClientRect = null;
     var dom = {
         pickup: document.getElementById("pickup"),
         coins: document.getElementById("coins"),
@@ -107,6 +138,17 @@ CoinCollector.UI = function() {
         watchVideoGems: document.getElementById("watchVideoGems"),
         watchVideoCoins: document.getElementById("watchVideoCoins"),
         help: document.getElementById("help")
+    };
+
+    ctx.getCoinAreaSize = function() {
+        if (coinAreaSize === null) {
+            coinAreagetBoundingClientRect = dom.pickup.getBoundingClientRect();
+            coinAreaSize = {
+                width: Math.max(coinAreagetBoundingClientRect.width - coinSize, 0),
+                height: Math.max(coinAreagetBoundingClientRect.height - coinSize, 0)
+            };
+        }
+        return coinAreaSize; 
     };
 
     ctx.coins = {
@@ -139,16 +181,12 @@ CoinCollector.UI = function() {
         }
     };
 
-    ctx.createCoin = function () {
-        var coin = document.createElement("div");
-        coin.className = "coin";
-        coin.constructChild()
+    ctx.createCoin = function (x, y) {
+        var coin = pickup.constructChild("div", {class: "coin"});
+        coin.constructChild("div", {class: "coinInside"}, "$");
+        coin.style.top = (coinAreagetBoundingClientRect.top + y).toString() + "px";
+        coin.style.left = (coinAreagetBoundingClientRect.left + x).toString() + "px";
         return coin;
     };
     Object.seal(this);
 };
-
-
-
-
-
