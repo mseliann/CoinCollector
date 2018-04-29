@@ -16,13 +16,16 @@ CoinCollector.prototype = CoinCollector;
 CoinCollector.Game = function(data, ui) {
     var ctx = this;
     var runCoinsTimeoutID = null; 
+    var runGemsTimeoutID = null; 
     var startTime = Date.now();
     var coinRate = 1000;
     var coinLife = 10000;
     var coinClickMultiplier = 3;
     ctx.run = function() {
         data.coins = 1000;
+        data.gems = 1000;
         runCoins();
+        runGems();
     };
     var createCoin = function() {};
     var setCoins = function() {};
@@ -40,10 +43,29 @@ CoinCollector.Game = function(data, ui) {
                     return;
                 }
                 var nxt = Math.min(Math.round(dif * .1 + .5, 0) + ui.coins.value, data.coins);
-                console.log(nxt - ui.coins.value)
                 ui.coins.display(nxt);
                 runCoinsTimeoutID = setTimeout(doIt, 50);
-                return this;
+            };
+            doIt();
+        }
+    };
+    var runGems = function() {
+        if (runGemsTimeoutID === null) {
+            var doIt = function() {
+                var dif = data.gems - ui.gems.value;
+                var nxt = ui.gems.value;
+                var timeout = 250;
+
+                if (dif === 0) {
+                    runGemsTimeoutID = null;
+                    return;
+                }
+
+                if (dif > 0) nxt += 1;
+                else nxt -= 1;
+                timeout = Math.round(Math.min(2000 / Math.abs(dif) + .5, timeout), 0);
+                ui.gems.display(nxt);
+                runGemsTimeoutID = setTimeout(doIt, timeout);
             };
             doIt();
         }
@@ -52,7 +74,6 @@ CoinCollector.Game = function(data, ui) {
     
     Object.seal(this);
 };
-
 
 CoinCollector.Data = function() {
     var ctx = this;
