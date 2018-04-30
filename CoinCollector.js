@@ -5,41 +5,89 @@ var CoinCollector = function () {
     var data = new CoinCollector.Data();
     var ui = new CoinCollector.UI();
     var game = new CoinCollector.Game(data, ui);
-    ctx.run = function () {};
-    ctx.stop = function() {};
+    ctx.run = function () {
+        game.run();
+    };
+    ctx.stop = function() {
+        game.stop();
+    };
     Object.seal(this);
 
     game.run();
 };
 CoinCollector.prototype = CoinCollector;
 
-CoinCollector.log = new function(s) {
+CoinCollector.log = function(s) {
     console.log(s)
 }
 
 CoinCollector.Game = function(data, ui) {
     var ctx = this;
-    var runCoinsTimeoutID = null; 
-    var runGemsTimeoutID = null; 
     var startTime = Date.now();
     var coinRate = 1000;
     var coinLife = 10000;
     var coinClickMultiplier = 3;
+    var coinBaseValue = 1;
+    var gameInterval = null;
+    var runCoinsTimeoutID = null; 
+    var runGemsTimeoutID = null;
+    var coinsInPlay = [];
+
 
     ctx.run = function() {
-        data.coins = 1000;
-        data.gems = 1000;
-        runCoins();
-        runGems();
-        console.log(ui.getCoinAreaSize());
-                
-        var fn = function () {
-            ui.createCoin(Math.random() * ui.getCoinAreaSize().width + 1, Math.random() * ui.getCoinAreaSize().height + 1);
-            setTimeout(fn, 0);
-        };
-        fn();
+        ui.gems.display(data.gems);
+        ui.coins.display(data.coins);
+        if (gameInterval === null) {
+            gameInterval = setInterval(gameLoop, coinRate);
+        }
     };
-    var createCoin = function() {};
+    ctx.stop = function () {
+        if (gameInterval !== null) {
+            clearInterval(gameInterval);
+            gameInterval = null;
+        }
+    }
+
+    var gameLoop = function() {
+        var dt = new Date();
+        remvoeAgedCoins(dt);
+        createCoin(dt);
+    };
+
+    var remvoeAgedCoins = function (currentDt) {
+        currentDt = currentDt || new Date();
+        for (var i = 0; i < coinsInPlay.length; i++) {
+            if (currentDt - coinsInPlay[i].created >= 10000) {
+                addCoins(coinBaseValue);
+                ui.destroyCoin(coinsInPlay[i].coin);
+                coinsInPlay.splice(i, 1);
+                i--;
+            }
+        }
+    }
+    var coinOnClick = function() {
+        var coinInPlay = null;
+        var coinInPlayIdx = null;
+        for (var i = 0; i < coinsInPlay.length; i++) {
+            if (this === coinsInPlay[i].coin) {
+                coinInPlay = coinsInPlay[i];
+                coinInPlayIdx = i;
+                break;
+            }
+        }
+        if (coinInPlayIdx !== null) coinsInPlay.splice(coinInPlayIdx, 1);
+        addCoins(coinBaseValue * coinClickMultiplier);
+        ui.destroyCoin(this);
+    }
+    var createCoin = function(currentDt) {
+        currentDt = currentDt || new Date();
+        var coinObj = {
+            coin: ui.createCoin(),
+            created: currentDt
+        }
+        coinObj.coin.addEventListener("click", coinOnClick);
+        coinsInPlay.push(coinObj);
+    };
     var addCoins = function(n) {
         if (data.coins < 0) {
             CoinCollector.log("Error: coins cannot be less than zero.")
@@ -70,9 +118,9 @@ CoinCollector.Game = function(data, ui) {
                     }
                     return;
                 }
-                var nxt = Math.min(Math.round(dif * .1 + .5, 0) + ui.coins.value, data.coins);
+                var nxt = Math.min(Math.round(dif * .05 + .5, 0) + ui.coins.value, data.coins);
                 ui.coins.display(nxt);
-                runCoinsTimeoutID = setTimeout(doIt, 50);
+                runCoinsTimeoutID = setTimeout(doIt, 150);
             };
             doIt();
         }
@@ -123,8 +171,6 @@ CoinCollector.Data = function() {
 CoinCollector.UI = function() {
     var ctx = this;
     var coinSize = 50;
-    var coinAreaSize = null;
-    var coinAreagetBoundingClientRect = null;
     var dom = {
         pickup: document.getElementById("pickup"),
         coins: document.getElementById("coins"),
@@ -139,17 +185,25 @@ CoinCollector.UI = function() {
         watchVideoCoins: document.getElementById("watchVideoCoins"),
         help: document.getElementById("help")
     };
+    var coinAreagetBoundingClientRect = dom.pickup.getBoundingClientRect();
+    var resizeTimeout = null;
 
-    ctx.getCoinAreaSize = function() {
-        if (coinAreaSize === null) {
-            coinAreagetBoundingClientRect = dom.pickup.getBoundingClientRect();
-            coinAreaSize = {
-                width: Math.max(coinAreagetBoundingClientRect.width - coinSize, 0),
-                height: Math.max(coinAreagetBoundingClientRect.height - coinSize, 0)
-            };
-        }
-        return coinAreaSize; 
+    var setCoinPosition = function(coin) {
+        coin.style.top = (Math.random() * (coinAreagetBoundingClientRect.height - coinSize) + coinAreagetBoundingClientRect.top + 1).toString() + "px";
+        coin.style.left = (Math.random() * (coinAreagetBoundingClientRect.width - coinSize) + coinAreagetBoundingClientRect.left + 1).toString() + "px";
     };
+
+    var fnResize = function () {
+        resizeTimeout = null;
+        coinAreagetBoundingClientRect = dom.pickup.getBoundingClientRect();
+        var coins = dom.pickup.querySelectorAll(".coin");
+        for (var i = 0; i < coins.length; i++) {
+            setCoinPosition(coins[i]);
+        }
+    };
+    var resizeHandler = function() {
+        if (resizeTimeout === null) resizeTimeout = setTimeout(fnResize, 200);
+    }
 
     ctx.coins = {
         value: 0,
@@ -181,12 +235,16 @@ CoinCollector.UI = function() {
         }
     };
 
-    ctx.createCoin = function (x, y) {
-        var coin = pickup.constructChild("div", {class: "coin"});
+    ctx.createCoin = function() {
+        var coin = dom.pickup.constructChild("div", {class: "coin"});
         coin.constructChild("div", {class: "coinInside"}, "$");
-        coin.style.top = (coinAreagetBoundingClientRect.top + y).toString() + "px";
-        coin.style.left = (coinAreagetBoundingClientRect.left + x).toString() + "px";
+        setCoinPosition(coin);
         return coin;
     };
+    ctx.destroyCoin = function(coinElm) {
+        coinElm.parentNode.removeChild(coinElm);
+    }
     Object.seal(this);
+
+    window.addEventListener("resize", resizeHandler, true);
 };
