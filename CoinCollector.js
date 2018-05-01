@@ -36,7 +36,7 @@ CoinCollector.Game = function(data, ui, audio) {
 
 
     ctx.run = function() {
-        ui.gems.display(data.gems);
+        displayGems(data.gems);
         ui.coins.display(data.coins);
         if (gameInterval === null) {
             gameInterval = setInterval(gameLoop, coinRate);
@@ -144,11 +144,16 @@ CoinCollector.Game = function(data, ui, audio) {
                 if (dif > 0) nxt += 1;
                 else nxt -= 1;
                 timeout = Math.round(Math.min(2000 / Math.abs(dif) + .5, timeout), 0);
-                ui.gems.display(nxt);
+                displayGems(nxt);
                 runGemsTimeoutID = setTimeout(doIt, timeout);
             };
             doIt();
         }
+    };
+    var displayGems = function(gems) {
+        if (gems >= 3 ) ui.upgradeCoinSpawn.upgradeReady(true);
+        else ui.upgradeCoinSpawn.upgradeReady(false);
+        ui.gems.display(gems);
     };
 
     
@@ -167,6 +172,7 @@ CoinCollector.UI = function() {
         gemsHead: document.getElementById("gemsHead"),
         gemsValue: document.getElementById("gemsValue"),
         upgradeCoinSpawn: document.getElementById("upgradeCoinSpawn"),
+        upgradeCoinSpawnValue: document.getElementById("upgradeCoinSpawnValue"),
         upgradeCoinMultiplier: document.getElementById("upgradeCoinMultiplier"),
         watchVideoGems: document.getElementById("watchVideoGems"),
         watchVideoCoins: document.getElementById("watchVideoCoins"),
@@ -187,10 +193,20 @@ CoinCollector.UI = function() {
         for (var i = 0; i < coins.length; i++) {
             setCoinPosition(coins[i]);
         }
+        util.scaleFont(dom.coinsValue);
+        util.scaleFont(dom.gemsValue);
+        util.scaleFont(dom.upgradeCoinSpawn);
     };
     var resizeHandler = function() {
         if (resizeTimeout === null) resizeTimeout = setTimeout(fnResize, 200);
     }
+
+    ctx.upgradeCoinSpawn = {
+        upgradeReady: function (isUpgradeReady) {
+            if (isUpgradeReady) dom.upgradeCoinSpawnValue.className = "upgradeReady";
+            else dom.upgradeCoinSpawnValue.className = null;
+        }
+    };
 
     ctx.coins = {
         value: 0,
@@ -234,6 +250,7 @@ CoinCollector.UI = function() {
     Object.seal(this);
 
     window.addEventListener("resize", resizeHandler, true);
+    util.scaleFont(dom.upgradeCoinSpawn);
 };
 
 CoinCollector.Audio = function() {

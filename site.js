@@ -137,6 +137,7 @@ var util = {
         }, 10);
     },
     scaleFont: function(elm) {
+        elm.style.fontSize = null;
         if (elm.scrollWidth > elm.offsetWidth) {
             var fontSize = parseFloat(window.getComputedStyle(elm).getPropertyValue("font-size"));
             for (var i = 0; i < 20 && elm.scrollWidth > elm.offsetWidth; i++) {
