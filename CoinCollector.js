@@ -4,7 +4,8 @@ var CoinCollector = function () {
     var ctx = this;
     var data = new CoinCollector.Data();
     var ui = new CoinCollector.UI();
-    var game = new CoinCollector.Game(data, ui);
+    var audio = new CoinCollector.Audio();
+    var game = new CoinCollector.Game(data, ui, audio);
     ctx.run = function () {
         game.run();
     };
@@ -21,7 +22,7 @@ CoinCollector.log = function(s) {
     console.log(s)
 }
 
-CoinCollector.Game = function(data, ui) {
+CoinCollector.Game = function(data, ui, audio) {
     var ctx = this;
     var startTime = Date.now();
     var coinRate = 1000;
@@ -78,6 +79,8 @@ CoinCollector.Game = function(data, ui) {
         if (coinInPlayIdx !== null) coinsInPlay.splice(coinInPlayIdx, 1);
         addCoins(coinBaseValue * coinClickMultiplier);
         ui.destroyCoin(this);
+        audio.beep(5000, 2, .02, "sine");
+        //audio.beep();
     }
     var createCoin = function(currentDt) {
         currentDt = currentDt || new Date();
@@ -120,6 +123,7 @@ CoinCollector.Game = function(data, ui) {
                 }
                 var nxt = Math.min(Math.round(dif * .05 + .5, 0) + ui.coins.value, data.coins);
                 ui.coins.display(nxt);
+                audio.beep(5000, 1, .01, "sine");
                 runCoinsTimeoutID = setTimeout(doIt, 150);
             };
             doIt();
@@ -148,23 +152,6 @@ CoinCollector.Game = function(data, ui) {
     };
 
     
-    Object.seal(this);
-};
-
-CoinCollector.Data = function() {
-    var ctx = this;
-    ctx.coins =  0;
-    ctx.gems = 0;
-
-    ctx.coinMultiplierLevel = 1;
-    ctx.coinSpawnLevel = 1;
-
-    ctx.lastSpin = 0;
-    ctx.lastFreeGem = 0;
-    ctx.videoList = [];
-
-    ctx.save = function() {};
-    ctx.load = function() {};
     Object.seal(this);
 };
 
@@ -247,4 +234,56 @@ CoinCollector.UI = function() {
     Object.seal(this);
 
     window.addEventListener("resize", resizeHandler, true);
+};
+
+CoinCollector.Audio = function() {
+    var ctx = this;
+    var audioContext = new (window.AudioContext||window.webkitAudioContext)();
+    var gain = [];
+
+    for (var i = 0; i <= 100; i++) {
+        gain.push(audioContext.createGain());
+        gain[i].gain.value = .0025 * i;
+        gain[i].connect(audioContext.destination);
+    }
+
+    ctx.mute = function() {
+        gain[i].gain.value = 0;
+    }
+
+    // Types: "sine", "square", "sawtooth", "triangle"
+    ctx.beep = function(freq, volume, time, type) {
+        if (freq === undefined) freq = 500;
+        if (volume === undefined) volume = 5;
+        if (type === undefined) type = "square";
+        if (time === undefined) time = .05;
+
+        console.log(freq, volume, type, time);
+
+        var oscNode = audioContext.createOscillator();
+        //oscNode.connect(audioContext.destination);
+        oscNode.connect(gain[volume]);
+        oscNode.type = type;
+        oscNode.frequency.value = freq;
+        oscNode.start(audioContext.currentTime);
+        oscNode.stop(audioContext.currentTime + time);
+    }
+    Object.seal(this);
+}
+
+CoinCollector.Data = function() {
+    var ctx = this;
+    ctx.coins =  0;
+    ctx.gems = 0;
+
+    ctx.coinMultiplierLevel = 1;
+    ctx.coinSpawnLevel = 1;
+
+    ctx.lastSpin = 0;
+    ctx.lastFreeGem = 0;
+    ctx.videoList = [];
+
+    ctx.save = function() {};
+    ctx.load = function() {};
+    Object.seal(this);
 };
