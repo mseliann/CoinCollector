@@ -34,7 +34,6 @@ CoinCollector.Game = function(data, ui, audio) {
     var runGemsTimeoutID = null;
     var coinsInPlay = [];
 
-
     ctx.run = function() {
         displayGems(data.gems);
         ui.coins.display(data.coins);
@@ -79,8 +78,7 @@ CoinCollector.Game = function(data, ui, audio) {
         if (coinInPlayIdx !== null) coinsInPlay.splice(coinInPlayIdx, 1);
         addCoins(coinBaseValue * coinClickMultiplier);
         ui.destroyCoin(this);
-        audio.beep(5000, 2, .02, "sine");
-        //audio.beep();
+        audio.beep(5000, 50, .02, "sine");
     }
     var createCoin = function(currentDt) {
         currentDt = currentDt || new Date();
@@ -151,8 +149,14 @@ CoinCollector.Game = function(data, ui, audio) {
         }
     };
     var displayGems = function(gems) {
-        if (gems >= 3 ) ui.upgradeCoinSpawn.upgradeReady(true);
-        else ui.upgradeCoinSpawn.upgradeReady(false);
+        if (gems >= 3 ) {
+            ui.upgradeCoinSpawn.upgradeReady(true);
+            ui.upgradeCoinMultiplier.upgradeReady(true);
+        }
+        else {
+            ui.upgradeCoinSpawn.upgradeReady(false);
+            ui.upgradeCoinMultipler.upgradeReady(false);
+        }
         ui.gems.display(gems);
     };
 
@@ -174,6 +178,7 @@ CoinCollector.UI = function() {
         upgradeCoinSpawn: document.getElementById("upgradeCoinSpawn"),
         upgradeCoinSpawnValue: document.getElementById("upgradeCoinSpawnValue"),
         upgradeCoinMultiplier: document.getElementById("upgradeCoinMultiplier"),
+        upgradeCoinMultiplierValue: document.getElementById("upgradeCoinMultiplierValue"),
         watchVideoGems: document.getElementById("watchVideoGems"),
         watchVideoCoins: document.getElementById("watchVideoCoins"),
         help: document.getElementById("help")
@@ -205,6 +210,12 @@ CoinCollector.UI = function() {
         upgradeReady: function (isUpgradeReady) {
             if (isUpgradeReady) dom.upgradeCoinSpawnValue.className = "upgradeReady";
             else dom.upgradeCoinSpawnValue.className = null;
+        }
+    };
+    ctx.upgradeCoinMultiplier = {
+        upgradeReady: function (isUpgradeReady) {
+            if (isUpgradeReady) dom.upgradeCoinMultiplierValue.className = "upgradeReady";
+            else dom.upgradeCoinMultiplierValue.className = null;
         }
     };
 
