@@ -151,11 +151,15 @@ CoinCollector.Game = function(data, ui, audio) {
     var displayGems = function(gems) {
         if (gems >= 3 ) {
             ui.upgradeCoinSpawn.upgradeReady(true);
+            ui.upgradeCoinSpawn.display("Upgrade Coin Spawn");
             ui.upgradeCoinMultiplier.upgradeReady(true);
+            ui.upgradeCoinMultiplier.display("Upgrade Coin Multiplier");
         }
         else {
             ui.upgradeCoinSpawn.upgradeReady(false);
-            ui.upgradeCoinMultipler.upgradeReady(false);
+            ui.upgradeCoinSpawn.display("--TODO--");
+            ui.upgradeCoinMultiplier.upgradeReady(false);
+            ui.upgradeCoinMultiplier.display("--TODO--");
         }
         ui.gems.display(gems);
     };
@@ -193,15 +197,24 @@ CoinCollector.UI = function() {
 
     var fnResize = function () {
         resizeTimeout = null;
+
+        //
+        // Rearrange the coins
+        //
         coinAreagetBoundingClientRect = dom.pickup.getBoundingClientRect();
         var coins = dom.pickup.querySelectorAll(".coin");
         for (var i = 0; i < coins.length; i++) {
             setCoinPosition(coins[i]);
         }
+
+        //
+        // Resize text to fit
+        //
         util.scaleFont(dom.coinsValue);
         util.scaleFont(dom.gemsValue);
         util.scaleFont(dom.upgradeCoinSpawn);
     };
+
     var resizeHandler = function() {
         if (resizeTimeout === null) resizeTimeout = setTimeout(fnResize, 200);
     }
@@ -210,12 +223,31 @@ CoinCollector.UI = function() {
         upgradeReady: function (isUpgradeReady) {
             if (isUpgradeReady) dom.upgradeCoinSpawnValue.className = "upgradeReady";
             else dom.upgradeCoinSpawnValue.className = null;
+        },
+        display: function (s) {
+            var txt = document.createTextNode(s);
+            if (dom.upgradeCoinSpawnValue.firstChild === null) {
+                dom.upgradeCoinSpawnValue.appendChild(txt);
+            } else {
+                dom.upgradeCoinSpawnValue.replaceChild(txt, dom.upgradeCoinSpawnValue.firstChild);
+            }
+            util.scaleFont(dom.upgradeCoinSpawn);
         }
     };
+
     ctx.upgradeCoinMultiplier = {
         upgradeReady: function (isUpgradeReady) {
             if (isUpgradeReady) dom.upgradeCoinMultiplierValue.className = "upgradeReady";
             else dom.upgradeCoinMultiplierValue.className = null;
+        },
+        display: function (s) {
+            var txt = document.createTextNode(s);
+            if (dom.upgradeCoinMultiplierValue.firstChild === null) {
+                dom.upgradeCoinMultiplierValue.appendChild(txt);
+            } else {
+                dom.upgradeCoinMultiplierValue.replaceChild(txt, dom.upgradeCoinMultiplierValue.firstChild);
+            }
+            util.scaleFont(dom.upgradeCoinMultiplier);
         }
     };
 
@@ -255,13 +287,16 @@ CoinCollector.UI = function() {
         setCoinPosition(coin);
         return coin;
     };
+
     ctx.destroyCoin = function(coinElm) {
         coinElm.parentNode.removeChild(coinElm);
     }
+
     Object.seal(this);
 
     window.addEventListener("resize", resizeHandler, true);
     util.scaleFont(dom.upgradeCoinSpawn);
+    util.scaleFont(dom.upgradeCoinMultiplier);
 };
 
 CoinCollector.Audio = function() {
