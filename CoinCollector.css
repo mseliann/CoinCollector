@@ -69,7 +69,7 @@ body {
 }
 #upgradeCoinSpawnValue {
     background-color: lightGray;
-    color: whitesmoke;
+    color: gray;
     border: calc(100vh / 56) outset white;
     width: 100%;
     height: 100%;
@@ -82,6 +82,7 @@ body {
 #upgradeCoinSpawnValue.upgradeReady {
     background-color: green;
     border-color: lightgreen;
+    color: white;
 }
 #upgradeCoinSpawnValue.upgradeReady:active {
     border: calc(100vh / 56) inset lightgreen;
@@ -96,7 +97,7 @@ body {
 }
 #upgradeCoinMultiplierValue {
     background-color: lightGray;
-    color: whitesmoke;
+    color: gray;
     border: calc(100vh / 56) outset white;
     width: 100%;
     height: 100%;
@@ -109,6 +110,7 @@ body {
 #upgradeCoinMultiplierValue.upgradeReady {
     background-color: green;
     border-color: lightgreen;
+    color: white;
 }
 #upgradeCoinMultiplierValue.upgradeReady:active {
     border: calc(100vh / 56) inset lightgreen;
@@ -141,8 +143,8 @@ body {
 }
 .coin {
     position: absolute;
-    left: 0px;
-    top: 0px;
+    left: 0;
+    top: 0;
     background-color:#f0e161;
     /*display: inline-block;*/
     font-size: 26px;
@@ -160,4 +162,14 @@ body {
     padding: 4px 11px;
     border-radius: 40px;
     border: 2px solid black;
+}
+.gem {
+    position: absolute;
+    left: 100px;
+    top: 100px;
+    width: 50px;
+    height: 50px;
+    background-image: url(gem.svg);
+    background-size: cover;
+    border-radius: 20px 20px 50px 50px;
 }

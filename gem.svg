@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<style>.fg{fill:#9DE2F3;stroke:#000000;stroke-width:4;}.bg{fill:#000000;stroke:#000000;stroke-width:32;}</style>
+<polygon points="11,160 114,31 398,31 501,160 256,476" class="bg"/>
+<polygon points="11,160 114,31 191,160" class="fg"/>
+<polygon points="114,31 256,31 191,160" class="fg"/>
+<polygon points="191,160 256,31 334,160" class="fg"/>
+<polygon points="256,31 398,31 334,160" class="fg"/>
+<polygon points="334,160 398,31 501,160" class="fg"/>
+<polygon points="11,160 191,160 256,476" class="fg"/>
+<polygon points="191,160 334,160 256,476 " class="fg"/>
+<polygon points="334,160 501,160 256,476" class="fg"/>
+</svg>
