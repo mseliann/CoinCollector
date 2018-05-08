@@ -124,7 +124,7 @@ body {
     height: calc(100vh / 7);
     border-bottom: 5px solid black;
 }
-#watchVideoCoins {
+#dailySpin {
     background-color: whitesmoke;
     position: absolute;
     top: calc(100vh / 7 * 5);
