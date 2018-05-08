@@ -160,6 +160,7 @@ CoinCollector.Game = function(data, ui, audio) {
         }
         gemObj.item.addEventListener("click", gemOnClick);
         itemsInPlay.push(gemObj);
+        audio.play("aAbcCdDefFgG", .1, .05, audio.waveType.triangle)
     };
     var addCoins = function(n) {
         if (data.coins < 0) {
@@ -408,25 +409,11 @@ CoinCollector.Audio = function() {
     var audioContext = new (window.AudioContext||window.webkitAudioContext)();
     var gain = [];
 
-    var scale = {
-        a: 440.00,
-        A: 466.164,
-        b: 493.883,
-        c: 523.251,
-        C: 554.365,
-        d: 587.330,
-        D: 622.254,
-        e: 659.255,
-        f: 698.456,
-        F: 739.989,
-        g: 783.991,
-        G: 830.609
-    }
-
-    for (var i = 0; i <= 100; i++) {
-        gain.push(audioContext.createGain());
-        gain[i].gain.value = .01 * i;
-        gain[i].connect(audioContext.destination);
+    ctx.waveType = {
+        sine: "sine",
+        square: "square",
+        sawtooth: "sawtooth",
+        triangle: "triangle"
     }
 
     ctx.mute = function() {
@@ -441,67 +428,80 @@ CoinCollector.Audio = function() {
         }
     }
 
-    // Types: "sine", "square", "sawtooth", "triangle"
-    ctx.beep = function(freq, volume, time, type) {
+    ctx.beep = function(freq, volume, time, waveType) {
         if (freq === undefined) freq = 500;
         if (volume === undefined) volume = 5;
-        if (type === undefined) type = "square";
+        if (waveType === undefined) waveType = "square";
         if (time === undefined) time = .05;
 
         var oscNode = audioContext.createOscillator();
         //oscNode.connect(audioContext.destination);
         oscNode.connect(gain[volume]);
-        oscNode.type = type;
+        oscNode.type = waveType;
         oscNode.frequency.value = freq;
         oscNode.start(audioContext.currentTime);
         oscNode.stop(audioContext.currentTime + time);
     }
 
-    ctx.play = function(notes, volume, time, type) {
-        if (volume === undefined) volume = 5;
-        if (type === undefined) type = "sawtooth";
+    ctx.play = function(notes, volume, time, waveType) {
+        if (volume === undefined) volume = 50;
+        if (waveType === undefined) waveType = "sawtooth";
         if (time === undefined) time = .25;
 
+        var i;
+        var t
+        var note;
+        var scale = getScale(440);
         var oscNode = audioContext.createOscillator();
-        var gain = audioContext.createGain()
-        gain.value = volume;
+        var gain = audioContext.createGain();
+        gain.value = volume * .01;
         gain.connect(audioContext.destination);
         oscNode.connect(gain);
-        oscNode.type = type;
-        
-        var lastNote = null;
-        var note = null;
-        var t = audioContext.currentTime;
-        for (var i = 0; i < notes.length; i++) {
-            note = notes.charAt(i);
+        oscNode.type = waveType;
 
-            if (scale.hasOwnProperty(note)) {
-                if (note !== lastNote) {
+        t = audioContext.currentTime;
+        for (i = 0; i < notes.length; i++) {
+            note = notes.charAt(i);
+            if (scale.hasOwnProperty(note) || note === ".") {
+                if (note !== ".") {
                     gain.gain.setValueAtTime(.01, t)
                     gain.gain.exponentialRampToValueAtTime(volume, t + .01);
+                    oscNode.frequency.setValueAtTime(scale[note], t);
                 }
-
-                oscNode.frequency.setValueAtTime(scale[note], t);
-
-                if (note != notes.charAt(i+1)) {
+                if (notes.charAt(i+1) !== ".") {
                     gain.gain.setValueAtTime(volume, t + time - .05)
                     gain.gain.exponentialRampToValueAtTime(.01, t + time);
                 }
-            } else if (note === "-") {
-                gain.gain.setValueAtTime(0, t)
+                t += time;
+            } else if (note === "<") {
+                scale = getScale(scale.a / 2);
+            } else if (note === ">") {
+                scale = getScale(scale.a * 2);
             } else {
-                lastNote = note;
-                continue;
+                gain.gain.setValueAtTime(0, t)
+                t += time;
             }
-            lastNote = note;
-            t += time;
         }
 
         oscNode.start(audioContext.currentTime);
         oscNode.stop(t);
     }
 
+    var getScale = function (ahz) {
+        var scale = {};
+        var scaleIdx = "aAbcCdDefFgG";
+        for (var i = 0; i < scaleIdx.length; i++) {
+            scale[scaleIdx.charAt(i)] = ahz * (Math.pow(2, i/12));
+        }
+        return scale;
+    };
     Object.seal(this);
+
+    for (var i = 0; i <= 100; i++) {
+        gain.push(audioContext.createGain());
+        gain[i].gain.value = .01 * i;
+        gain[i].connect(audioContext.destination);
+    }
 }
 
 CoinCollector.Data = function() {
