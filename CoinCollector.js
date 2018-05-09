@@ -245,6 +245,14 @@ CoinCollector.Game = function(data, ui, audio) {
         ui.gems.display(gems);
     };
 
+    var collectVideoGem = function() {
+        addGems(1);
+        audio.beep(7500, 50, .04, "triangle");
+    };
+
+    var playGemVideo = function() {
+        ui.playVideo("Qit3ALTelOo", "Mean Kitty Song", 210, collectVideoGem);
+    };
     
     Object.seal(this);
 
@@ -395,8 +403,33 @@ CoinCollector.UI = function() {
 
     ctx.destroyItem = function(coinElm) {
         coinElm.parentNode.removeChild(coinElm);
-    }
+    };
 
+    ctx.playVideo = function (key, title, watchTime, fnDo) {
+        //<iframe width="560" height="315" src="https://www.youtube.com/embed/Qit3ALTelOo?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        var beginTm = (new Date()).getTime();
+        var iframeSrc = "https://www.youtube.com/embed/" + key + "?rel=0&controls=0;&showinfo=0&autoplay=1&iv_load_policy=3";
+        var container = document.createElement("div");
+        var iframe = container.constructChild("iframe", {
+            width: "560",
+            height: "315",
+            src: iframeSrc,
+            frameborder: "0",
+            allow: "autoplay; encrypted-media",
+            allowfullscreen: ""
+        });
+        var close = container.constructChild("div").constructChild("button", "Close", {style: "width: 560px"});
+        close.addEventListener("click", function(e) {
+            e.preventDefault();
+            var endTm = (new Date()).getTime();
+            if (watchTime * 1000 < endTm - beginTm) {
+                fnDo();
+            }
+            util.popOverlay();
+            return false;
+        });
+        util.pushOverlay(container, title);
+    };
     Object.seal(this);
 
     window.addEventListener("resize", resizeHandler, true);
@@ -417,15 +450,11 @@ CoinCollector.Audio = function() {
     }
 
     ctx.mute = function() {
-        for (var i = 0; i < gain.length; i++) {
-            gain[i].gain.value = 0;
-        }
+        audioContext.suspend();
     }
 
     ctx.unMute = function() {
-        for (var i = 0; i < gain.length; i++) {
-            gain[i].gain.value = .01 * i;
-        }
+        audioContext.resume();
     }
 
     ctx.beep = function(freq, volume, time, waveType) {
@@ -495,6 +524,7 @@ CoinCollector.Audio = function() {
         }
         return scale;
     };
+
     Object.seal(this);
 
     for (var i = 0; i <= 100; i++) {
