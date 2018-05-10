@@ -116,13 +116,27 @@ body {
     border: calc(100vh / 56) inset lightgreen;
 }
 #watchVideoGems {
-    background-color: gray;
     position: absolute;
     top: calc(100vh / 7 * 4);
     right: 0;
     width: 200px;
     height: calc(100vh / 7);
     border-bottom: 5px solid black;
+}
+#watchVideoGemsValue {
+    background-color: #1abdd9;
+    color: #ffffff;
+    border: calc(100vh / 56) outset #8be2f1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: calc(100vh / 25);
+}
+#watchVideoGemsValue:active {
+    border: calc(100vh / 56) inset #8be2f1;
 }
 #dailySpin {
     background-color: whitesmoke;

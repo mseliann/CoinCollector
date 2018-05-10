@@ -250,8 +250,10 @@ CoinCollector.Game = function(data, ui, audio) {
         audio.beep(7500, 50, .04, "triangle");
     };
 
-    var playGemVideo = function() {
-        ui.playVideo("Qit3ALTelOo", "Mean Kitty Song", 210, collectVideoGem);
+    var watchVideoGemsOnClick = function() {
+        var idx = Math.floor(Math.random() * data.videoList.length);
+        var video = data.videoList[idx];
+        ui.playVideo(video.video, video.title, video.length, collectVideoGem);
     };
     
     Object.seal(this);
@@ -261,6 +263,10 @@ CoinCollector.Game = function(data, ui, audio) {
     });
     ui.upgradeCoinSpawn.onClick(function() {
         upgradeCoinSpawnOnClick();
+    });
+
+    ui.watchVideoGems.onClick(function() {
+        watchVideoGemsOnClick();
     });
 };
 CoinCollector.Game.prototype = CoinCollector.Game;
@@ -281,7 +287,7 @@ CoinCollector.UI = function() {
         upgradeCoinMultiplier: document.getElementById("upgradeCoinMultiplier"),
         upgradeCoinMultiplierValue: document.getElementById("upgradeCoinMultiplierValue"),
         watchVideoGems: document.getElementById("watchVideoGems"),
-        watchVideoCoins: document.getElementById("watchVideoCoins"),
+        dailySpin: document.getElementById("dailySpin"),
         help: document.getElementById("help")
     };
     var coinAreaBoundingClientRect = dom.pickup.getBoundingClientRect();
@@ -317,6 +323,12 @@ CoinCollector.UI = function() {
     var resizeHandler = function() {
         if (resizeTimeout === null) resizeTimeout = setTimeout(fnResize, 200);
     }
+
+    ctx.watchVideoGems = {
+        onClick: function (fn) {
+            dom.watchVideoGems.addEventListener("click", fn);
+        }
+    };
 
     ctx.upgradeCoinSpawn = {
         upgradeReady: function (isUpgradeReady) {
@@ -544,7 +556,15 @@ CoinCollector.Data = function() {
 
     ctx.lastSpin = 0;
     ctx.lastFreeGem = 0;
-    ctx.videoList = [];
+    ctx.videoList = [
+        {video: "Qit3ALTelOo", title: "Mean Kitty Song", length: 60},
+        {video: "MtN1YnoL46Q", title: "Duck Song", length: 60},
+        {video: "UD-MkihnOXg", title: "The Lion Sleeps Tonight", length: 60},
+        {video: "WRh_mCxd3UY", title: "Banana Song - Minions", length: 60},
+        {video: "zMLdAZRghXg", title: "Bah na na na Banana rap", length: 55},
+        {video: "Z3ZAGBL6UBA", title: "It's Peanut Butter Jelly Time!!!", length: 60},
+        {video: "exads7KV-Y0", title: "Blackbeard, Bluebeard & Redbeard - A Pirate Story", length: 60},
+    ];
 
     ctx.save = function() {};
     ctx.load = function() {};
