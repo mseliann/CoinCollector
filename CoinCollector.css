@@ -115,7 +115,7 @@ body {
 #upgradeCoinMultiplierValue.upgradeReady:active {
     border: calc(100vh / 56) inset lightgreen;
 }
-#watchVideoGems {
+#watchVideo {
     position: absolute;
     top: calc(100vh / 7 * 4);
     right: 0;
@@ -123,7 +123,7 @@ body {
     height: calc(100vh / 7);
     border-bottom: 5px solid black;
 }
-#watchVideoGemsValue {
+#watchVideoValue {
     background-color: #1abdd9;
     color: #ffffff;
     border: calc(100vh / 56) outset #8be2f1;
@@ -135,7 +135,7 @@ body {
     text-align: center;
     font-size: calc(100vh / 25);
 }
-#watchVideoGemsValue:active {
+#watchVideoValue:active {
     border: calc(100vh / 56) inset #8be2f1;
 }
 #dailySpin {

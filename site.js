@@ -79,6 +79,7 @@ var util = {
         handle.addEventListener("mousedown", grab, false);
     },
     pushOverlay: function (elm, title) {
+        if (title === undefined) title = "";
         var stackLen = util.overlayContentStack.length;
     
         if (stackLen === 0) {
@@ -99,6 +100,11 @@ var util = {
         util.overlayContent.appendChild(overlayContentTitle);
         util.overlayContent.appendChild(elm);
         util.overlay.appendChild(util.overlayContent);
+
+        var rect = util.overlayContent.getBoundingClientRect();
+        var marginTop = (window.innerHeight - (rect.bottom - rect.top)) / 2 + document.documentElement.scrollTop;
+        if (marginTop < 0) marginTop = window.innerHeight;
+        util.overlayContent.style.marginTop = marginTop.toString() + "px";
     
         util.makeMovable(util.overlayContent, overlayContentTitle);
         util.overlayContentStack.push(util.overlayContent);

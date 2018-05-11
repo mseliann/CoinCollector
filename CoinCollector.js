@@ -46,7 +46,7 @@ CoinCollector.Game = function(data, ui, audio) {
             clearInterval(gameInterval);
             gameInterval = null;
         }
-    }
+    };
 
     var gameLoop = function() {
         var dt = new Date();
@@ -250,10 +250,23 @@ CoinCollector.Game = function(data, ui, audio) {
         audio.beep(7500, 50, .04, "triangle");
     };
 
-    var watchVideoGemsOnClick = function() {
+    var collectVideoCoins = function() {
+        addCoins(1000);
+        audio.beep(7500, 50, .04, "triangle");
+    };
+
+    var watchVideoOnClick = function() {
         var idx = Math.floor(Math.random() * data.videoList.length);
         var video = data.videoList[idx];
-        ui.playVideo(video.video, video.title, video.length, collectVideoGem);
+        var beginTime = (new Date()).getTime();
+
+        var fnOnClose = function() {
+            var endTime = (new Date()).getTime();
+            if (video.length * 1000 < endTime - beginTime) {
+                ui.promptForReward(collectVideoCoins, collectVideoGem);
+            }
+        };
+        ui.playVideo(video.video, video.title, fnOnClose);
     };
     
     Object.seal(this);
@@ -265,8 +278,8 @@ CoinCollector.Game = function(data, ui, audio) {
         upgradeCoinSpawnOnClick();
     });
 
-    ui.watchVideoGems.onClick(function() {
-        watchVideoGemsOnClick();
+    ui.watchVideo.onClick(function() {
+        watchVideoOnClick();
     });
 };
 CoinCollector.Game.prototype = CoinCollector.Game;
@@ -286,7 +299,7 @@ CoinCollector.UI = function() {
         upgradeCoinSpawnValue: document.getElementById("upgradeCoinSpawnValue"),
         upgradeCoinMultiplier: document.getElementById("upgradeCoinMultiplier"),
         upgradeCoinMultiplierValue: document.getElementById("upgradeCoinMultiplierValue"),
-        watchVideoGems: document.getElementById("watchVideoGems"),
+        watchVideo: document.getElementById("watchVideo"),
         dailySpin: document.getElementById("dailySpin"),
         help: document.getElementById("help")
     };
@@ -324,9 +337,9 @@ CoinCollector.UI = function() {
         if (resizeTimeout === null) resizeTimeout = setTimeout(fnResize, 200);
     }
 
-    ctx.watchVideoGems = {
+    ctx.watchVideo = {
         onClick: function (fn) {
-            dom.watchVideoGems.addEventListener("click", fn);
+            dom.watchVideo.addEventListener("click", fn);
         }
     };
 
@@ -417,9 +430,7 @@ CoinCollector.UI = function() {
         coinElm.parentNode.removeChild(coinElm);
     };
 
-    ctx.playVideo = function (key, title, watchTime, fnDo) {
-        //<iframe width="560" height="315" src="https://www.youtube.com/embed/Qit3ALTelOo?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        var beginTm = (new Date()).getTime();
+    ctx.playVideo = function (key, title, fnOnClose) {      
         var iframeSrc = "https://www.youtube.com/embed/" + key + "?rel=0&controls=0;&showinfo=0&autoplay=1&iv_load_policy=3";
         var container = document.createElement("div");
         var iframe = container.constructChild("iframe", {
@@ -433,15 +444,32 @@ CoinCollector.UI = function() {
         var close = container.constructChild("div").constructChild("button", "Close", {style: "width: 560px"});
         close.addEventListener("click", function(e) {
             e.preventDefault();
-            var endTm = (new Date()).getTime();
-            if (watchTime * 1000 < endTm - beginTm) {
-                fnDo();
-            }
             util.popOverlay();
+            fnOnClose();
             return false;
         });
         util.pushOverlay(container, title);
     };
+
+    ctx.promptForReward = function(fnCollectCoins, fnCollectGems) {
+        var div = document.createElement("div");
+        div.style.textAlign = "center";
+        div.constructChild("div", "Congratulations, you earned a reward.");
+        var btnCoins = div.constructChild("button", "Collect 1000 Coins", {style: "width: 150px"});
+        div.constructChild("br");
+        var btnGems = div.constructChild("button", "Collect 1 Gem", {style: "width: 150px"});
+        btnCoins.addEventListener("click", function (e) {
+            e.preventDefault();
+            util.popOverlay();
+            fnCollectCoins();
+        });
+        btnGems.addEventListener("click", function (e) {
+            e.preventDefault();
+            util.popOverlay();
+            fnCollectGems();
+        });
+        util.pushOverlay(div, "Congratulations!");
+    }
     Object.seal(this);
 
     window.addEventListener("resize", resizeHandler, true);
