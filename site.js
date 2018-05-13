@@ -41,7 +41,7 @@ var util = {
         var initX, initY, mousePressX, mousePressY, isDrag = false;
         handle = handle || obj;
 
-        (function () {
+        var grab = function (e) {
             var rect = obj.getBoundingClientRect();
             obj.style.margin = "0";
             obj.style.position = "absolute";
@@ -49,10 +49,6 @@ var util = {
             obj.style.left = rect.left + "px";
             obj.style.width = (rect.right - rect.left) + "px";
             obj.style.height = (rect.bottom - rect.top) + "px";
-        })();
-
-        var grab = function (e) {
-            var rect = obj.getBoundingClientRect();
             initX = rect.left;
             initY = rect.top;
             mousePressX = event.clientX;
@@ -79,7 +75,6 @@ var util = {
         handle.addEventListener("mousedown", grab, false);
     },
     pushOverlay: function (elm, title) {
-        if (title === undefined) title = "";
         var stackLen = util.overlayContentStack.length;
     
         if (stackLen === 0) {
@@ -90,23 +85,23 @@ var util = {
             util.overlay.removeChild(util.overlayContentStack[stackLen - 1]);
         }
     
-        var overlayContentTitle = document.createElement("div");
-        overlayContentTitle.className = "overlayContentTitle";
-        overlayContentTitle.appendChild(document.createTextNode(title));
-    
         util.overlayContent = document.createElement("div");
         util.overlayContent.className = "overlayContent";
-    
-        util.overlayContent.appendChild(overlayContentTitle);
         util.overlayContent.appendChild(elm);
         util.overlay.appendChild(util.overlayContent);
 
+        if (title !== undefined) {
+            var overlayContentTitle = document.createElement("div");
+            overlayContentTitle.className = "overlayContentTitle";
+            overlayContentTitle.appendChild(document.createTextNode(title));
+            util.overlayContent.insertBefore(overlayContentTitle, elm);
+            util.makeMovable(util.overlayContent, overlayContentTitle);
+        }
         var rect = util.overlayContent.getBoundingClientRect();
         var marginTop = (window.innerHeight - (rect.bottom - rect.top)) / 2 + document.documentElement.scrollTop;
         if (marginTop < 0) marginTop = window.innerHeight;
         util.overlayContent.style.marginTop = marginTop.toString() + "px";
-    
-        util.makeMovable(util.overlayContent, overlayContentTitle);
+
         util.overlayContentStack.push(util.overlayContent);
     },
     popOverlay: function () {   
