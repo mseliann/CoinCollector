@@ -128,6 +128,7 @@ var util = {
             document.body.removeChild(menu);
             document.body.removeEventListener("click", fnRemove, true);
             document.body.removeEventListener("scroll", fnRemove, true);
+            document.body.removeEventListener("contextmenu", fnRemove, true);
         };
         menu.className += " contextMenu";
         for (var i = 0; i < menu.childNodes.length; i++) {
@@ -140,6 +141,7 @@ var util = {
             document.body.appendChild(menu);
             document.body.addEventListener("click", fnRemove, true);
             document.body.addEventListener("scroll", fnRemove, true);
+            document.body.addEventListener("contextmenu", fnRemove, true);
         }, 10);
     },
     scaleFont: function(elm) {
