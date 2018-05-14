@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<style>
+    .bg{fill:#000000;}
+    .c1{fill:#ffffff;}
+    .c2{fill:#ffff00;}
+    .c3{fill:#ff00ff;}
+    .c4{fill:#00ffff;}
+    .c5{fill:#ff0000;}
+    .c6{fill:#00ff00;}
+    .c7{fill:#0000ff;}
+    .c8{fill:#888888;}
+    .t1{font-family:courier;font-size:25px;}
+    .tmp{fill:transparent;stroke:#000000;stroke-width:1;}
+</style>
+<defs>
+    <clipPath id="cp">
+        <circle cx="256" cy="256" r="254" />
+    </clipPath>
+</defs>
+    <circle cx="256" cy="256" r="255" class="bg" />
+    <polygon points="256,256 256,0 512,0" class="c1" clip-path="url(#cp)"/>
+    <polygon points="256,256 512,0 512,256" class="c2" clip-path="url(#cp)"/>
+    <polygon points="256,256 512,256 512,512" class="c1" clip-path="url(#cp)"/>
+    <polygon points="256,256 512,512 256,512" class="c4" clip-path="url(#cp)"/>
+    <polygon points="256,256 256,512 0,512" class="c1" clip-path="url(#cp)"/>
+    <polygon points="256,256 0,512 0,256" class="c6" clip-path="url(#cp)"/>
+    <polygon points="256,256 0,256 0,0" class="c1" clip-path="url(#cp)"/>
+    <polygon points="256,256 0,0 256,0" class="c8" clip-path="url(#cp)"/>
+    <circle id="l1" cx="256" cy="256" r="218.5" class="tmp" />
+    <circle cx="256" cy="256" r="193.5" class="tmp" />
+    <text class="t1" transform="translate(265,30)rotate(22.5)">Beter Luck</text>
+    <text class="t1" transform="translate(260,60)rotate(22.5)">Next Time</text>
+    <text class="t1" transform="translate(450,140)rotate(67.5)">Coin</text>
+    <text class="t1" transform="translate(390,130)rotate(67.5)">Jackpot!</text>
+    <text><textPath href="#l1">abc123</textPath></text>
+</svg>
